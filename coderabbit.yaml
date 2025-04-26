@@ -1,0 +1,20 @@
+review:
+  mode: auto
+  goals:
+    - Improve code quality
+    - Ensure security best practices
+    - Enhance code readability
+    - Verify code correctness
+  files:
+    include:
+      - "**/*.py"        # ให้ตรวจไฟล์ Python ทั้งหมด
+      - "**/*.md"        # รวมพวกไฟล์เอกสาร Markdown ด้วย (เช่น README.md)
+    exclude:
+      - "tests/**"       # ข้ามโฟลเดอร์ tests ไป (เพราะส่วนใหญ่มักเป็นโค้ด mock/test)
+comments:
+  style: professional   # ให้คอมเมนต์แบบภาษามืออาชีพ
+  tone: constructive    # แนะนำแบบสร้างสรรค์ ไม่ใช่จับผิด
+  verbosity: medium     # ความยาวคอมเมนต์ ปานกลาง (อธิบายพอเข้าใจ)
+
+autofix:
+  enabled: false        # ไม่ให้มันแก้ไฟล์เองอัตโนมัติ (แค่คอมเมนต์แนะนำ)
