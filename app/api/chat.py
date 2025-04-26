@@ -39,3 +39,5 @@ async def chat_endpoint(
     except Exception as e:
         logger.exception(f"Unhandled exception in chat endpoint for thread_id {thread_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error") 
+        print("Triggering CodeRabbit review!")
+
