@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "nia"
+version = "0.1.0"
+description = "Multi-platform AI Chat Agent"
+authors = ["lu-maid Dev "]
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+langchain-google-genai = "*"
+langgraph = "*"
+langchain-core = "*"
+sqlalchemy = {extras = ["asyncio"], version = "*"}
+asyncpg = "*"
+python-dotenv = "*"
+jinja2 = "*"
+python-multipart = "*"
+aiofiles = "*"
+psycopg2-binary = "*"
+pydantic-settings = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# --- เพิ่มส่วนนี้สำหรับ UV (ถ้าใช้ UV แทน Poetry โดยตรง) ---
+# [tool.uv.sources]
+# nia = { path = "." }

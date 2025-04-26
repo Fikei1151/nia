@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Service สำหรับ PostgreSQL Database
+  db:
+    image: postgres:15-alpine # ใช้ image ที่เบาลง หรือ postgres:16 ก็ได้
+    container_name: nia-postgres-db
+    environment:
+      POSTGRES_USER: nia_user       # <--- ตั้งชื่อ user
+      POSTGRES_PASSWORD: nia_password # <--- ตั้งรหัสผ่านที่ปลอดภัย
+      POSTGRES_DB: nia_db           # <--- ตั้งชื่อ database
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # ใช้ named volume เพื่อเก็บข้อมูล DB ถาวร
+    ports:
+      - "5433:5432" # Map port 5432 ใน container ไปยัง 5433 บน host (เผื่อเข้าถึง DB โดยตรง)
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nia_user -d nia_db"] # ตรวจสอบว่า DB พร้อมรับ connection
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Service สำหรับ FastAPI Application
+  app:
+    build: . # สั่งให้ build image จาก Dockerfile ใน directory ปัจจุบัน
+    container_name: nia-fastapi-app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 # รันแบบปกติ
+    # volumes: # Comment out volume mount for production build if code doesn't change
+    #   - ./app:/code/app
+    ports:
+      - "8000:8000" # Map port 8000 ใน container ไปยัง 8000 บน host
+    environment:
+      # DATABASE_URL ต้องใช้ชื่อ service 'db' เป็น host
+      DATABASE_URL: postgresql+asyncpg://nia_user:nia_password@db:5432/nia_db # <--- ใช้ user/pass/db/host ให้ตรงกับ service 'db'
+      # GOOGLE_API_KEY จะถูกอ่านจาก .env ไฟล์ด้านล่าง
+    env_file:
+      - .env # โหลด environment variables จากไฟล์ .env
+    depends_on:
+      db:
+        condition: service_healthy # รอจนกว่า service 'db' จะ healthy (ผ่าน healthcheck) ก่อนเริ่ม 'app'
+    restart: unless-stopped
+    working_dir: /code # กำหนด working directory ให้ตรงกับใน Dockerfile
+
+volumes:
+  postgres_data: # ประกาศ named volume สำหรับเก็บข้อมูล PostgreSQL
